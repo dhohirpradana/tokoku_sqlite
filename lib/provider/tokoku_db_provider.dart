@@ -24,7 +24,7 @@ class TokoDbProvider {
           jumlah INTEGER,
           dari TEXT,
           ket TEXT,
-          created_at TEXT,
+          created_at INTEGER,
           is_deleted INTEGER)""");
       await db.execute("""
           CREATE TABLE Jual(
@@ -35,7 +35,16 @@ class TokoDbProvider {
           diskon INTEGER,
           pembeli TEXT,
           ket TEXT,
-          created_at TEXT)""");
+          created_at INTEGER,
+          is_deleted INTEGER)""");
+      await db.execute("""
+          CREATE TABLE Retur(
+          id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+          idJual INTEGER,
+          jumlah INTEGER,
+          potongan INTEGER,
+          created_at INTEGER,
+          is_deleted INTEGER)""");
     });
   }
 
@@ -79,7 +88,7 @@ class TokoDbProvider {
 
     final db = await init();
     final maps = await db.rawQuery(
-        "SELECT * FROM Stock WHERE nama LIKE '%$nama%' AND is_deleted='0'"); //query all the rows in a table as an array of maps
+        "SELECT * FROM Stock WHERE nama LIKE '%$nama%' AND is_deleted='0' ORDER BY nama ASC"); //query all the rows in a table as an array of maps
 
     return List.generate(maps.length, (i) {
       //create a list of Stock
@@ -95,18 +104,6 @@ class TokoDbProvider {
       );
     });
   }
-
-  // Future<int> deleteStock(int id) async {
-  //   //returns number of items deleted
-  //   final db = await init();
-
-  //   int result = await db.delete("Stock", //table name
-  //       where: "id = ?",
-  //       whereArgs: [id] // use whereArgs to avoid SQL injection
-  //       );
-
-  //   return result;
-  // }
 
   Future<int> deleteStock(int id, StockModel stockItem) async {
     // returns the number of rows updated
@@ -141,7 +138,7 @@ class TokoDbProvider {
     //returns the Stock as a list (array)
     final db = await init();
     final maps = await db.rawQuery(
-        "SELECT Jual.id,Jual.hargaJual,Jual.jumlah,Jual.diskon,Jual.pembeli,Jual.ket,Jual.created_at,Stock.nama FROM Jual JOIN Stock ON Stock.id=Jual.idStock ORDER BY Jual.id DESC",
+        "SELECT Jual.id,Jual.hargaJual,Jual.jumlah,Jual.diskon,Jual.pembeli,Jual.ket,Jual.created_at,Stock.nama FROM Jual JOIN Stock ON Stock.id=Jual.idStock WHERE Jual.is_deleted='0' ORDER BY Jual.id DESC",
         null); //query all the rows in a table as an array of maps
     return List.generate(maps.length, (i) {
       //create a list of tampilJual
@@ -155,6 +152,59 @@ class TokoDbProvider {
         ket: maps[i]['ket'],
         createdAt: maps[i]['created_at'],
       );
+    });
+  }
+
+  //Table Retur
+  Future<int> addRetur(ReturModel returItem) async {
+    //returns number of items inserted as an integer
+    final db = await init(); //open database
+    return db.insert(
+      "Retur", returItem.toMap(), //toMap() function from JualModel
+      conflictAlgorithm:
+          ConflictAlgorithm.ignore, //ignores conflicts due to duplicate entries
+    );
+  }
+
+  Future<List<TampilReturModel>> fetchRetur() async {
+    //returns the Stock as a list (array)
+    final db = await init();
+    final maps = await db.rawQuery(
+        "SELECT Retur.id,Retur.idJual,Retur.jumlah,Retur.potongan,Retur.created_at,Stock.nama FROM Retur LEFT JOIN Jual ON Retur.idJual=Jual.id LEFT JOIN Stock ON Jual.idStock=Stock.id WHERE Retur.is_deleted='0' ORDER BY Jual.id DESC",
+        null); //query all the rows in a table as an array of maps
+    return List.generate(maps.length, (i) {
+      //create a list of tampilJual
+      return TampilReturModel(
+        id: maps[i]['id'],
+        idJual: maps[i]['idJual'],
+        nama: maps[i]['nama'],
+        jumlah: maps[i]['jumlah'],
+        potongan: maps[i]['potongan'],
+        createdAt: maps[i]['created_at'],
+      );
+    });
+  }
+
+  //Tampil Pendapatan
+  Future<List<PendapatanModel>> fetchPendapatan() async {
+    //returns the Stock as a list (array)
+    final db = await init();
+    final maps = await db.rawQuery(
+        "SELECT Jual.hargaJual AS harga_jual,Jual.jumlah,Jual.diskon,(Jual.hargaJual*Jual.jumlah) AS grand_harga,(Jual.hargaJual*Jual.jumlah-Jual.diskon) AS total_id,SUM(Jual.hargaJual*Jual.jumlah) AS total_harga,SUM(Jual.jumlah) AS total_jumlah,SUM(Jual.diskon) AS total_diskon,Stock.hargaBeli AS harga_beli,SUM(Stock.hargaBeli*Jual.jumlah) AS total_beli,((Jual.hargaJual*Jual.jumlah-Jual.diskon)-(Stock.hargaBeli*Jual.jumlah)) AS laba_id,SUM((Jual.hargaJual*Jual.jumlah-Jual.diskon)-(Stock.hargaBeli*Jual.jumlah)) AS total_laba FROM Jual JOIN Stock ON Jual.idStock=Stock.id WHERE Jual.is_deleted='0'",
+        null); //query all the rows in a table as an array of maps
+    return List.generate(maps.length, (i) {
+      //create a list of tampilJual
+      return PendapatanModel(
+          hargaId: maps[i]['harga_jual'],
+          jumlahId: maps[i]['jumlah'],
+          diskonId: maps[i]['diskon'],
+          grandHargaId: maps[i]['grand_harga'],
+          totalId: maps[i]['total_id'],
+          totalBeli: maps[i]['total_beli'],
+          totalHarga: maps[i]['total_harga'],
+          totalJumlah: maps[i]['total_jumlah'],
+          totalDiskon: maps[i]['total_diskon'],
+          totalLaba: maps[i]['total_laba']);
     });
   }
 }

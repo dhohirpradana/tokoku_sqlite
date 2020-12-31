@@ -48,7 +48,9 @@ class _AddStockPageState extends State<AddStockPage> {
 
   void addStock() async {
     DateTime now = DateTime.now();
-    final formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
+    final formattedDate = int.parse(DateFormat('yyyy-MM-dd – kk:mm')
+        .format(now)
+        .replaceAll(RegExp(r'[^0-9]'), ''));
     final bengkel = StockModel(
         nama: namaController.text,
         hargaBeli: int.parse(
@@ -58,7 +60,7 @@ class _AddStockPageState extends State<AddStockPage> {
         jumlah: int.parse(jumlahController.text),
         dari: dariController.text,
         ket: ketController.text,
-        createdAt: '$formattedDate',
+        createdAt: formattedDate,
         isDeleted: 0);
     await bengkelDb.addStock(bengkel);
     namaController.clear();
@@ -86,7 +88,7 @@ class _AddStockPageState extends State<AddStockPage> {
         color: Colors.green.shade300,
       ),
       leftBarIndicatorColor: Colors.blue.shade300,
-      duration: Duration(seconds: 3),
+      duration: Duration(seconds: 2),
     )..show(context);
   }
 

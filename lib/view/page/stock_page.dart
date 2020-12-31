@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:ucup_bengkel/model/tokoku_model.dart';
 import 'package:ucup_bengkel/provider/tokoku_db_provider.dart';
 import 'package:ucup_bengkel/view/page/add_stock_page.dart';
+import 'package:ucup_bengkel/view/page/edit_stock_page.dart';
 
 import 'out_stock_page.dart';
 
@@ -152,150 +154,171 @@ class _StockPageState extends State<StockPage> {
                                 showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Text(
-                                            (stockModel.nama).toUpperCase()),
-                                        content: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.stretch,
-                                          children: <Widget>[
-                                            Divider(
-                                              color: Colors.black,
-                                            ),
-                                            Text(
-                                                "Stock              :  $jumlah"),
-                                            Divider(
-                                              color: Colors.black,
-                                            ),
-                                            Text("Harga Beli     :  Rp $beli"),
-                                            Divider(
-                                              color: Colors.black,
-                                            ),
-                                            Row(
-                                              children: <Widget>[
-                                                Text("Harga Jual    :  "),
-                                                Text(
-                                                  'Rp $jual',
-                                                  style: TextStyle(
-                                                      fontSize:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width /
-                                                              21,
-                                                      fontWeight:
-                                                          FontWeight.w900),
-                                                )
-                                              ],
-                                            ),
-                                            Divider(
-                                              color: Colors.black,
-                                            ),
-                                            Text(
-                                                "Dari                :  $dari"),
-                                            Divider(
-                                              color: Colors.black,
-                                            ),
-                                            Text("Keterangan  :  $ket"),
-                                            Divider(
-                                              color: Colors.black,
-                                            )
-                                          ],
-                                        ),
-                                        actions: <Widget>[
-                                          InkWell(
-                                            onTap: () =>
-                                                Navigator.pushReplacement(
-                                                    context,
-                                                    PageRouteBuilder(
-                                                        pageBuilder: (c, a1,
-                                                                a2) =>
-                                                            OutStockPage(
-                                                                stockModel:
-                                                                    stockModel))),
-                                            child: Container(
-                                              padding: EdgeInsets.all(10),
-                                              child: Text("JUAL",
-                                                  style: TextStyle(
-                                                      color: Colors.blue)),
-                                            ),
+                                      return BackdropFilter(
+                                        filter: ImageFilter.blur(
+                                            sigmaX: 10, sigmaY: 10),
+                                        child: AlertDialog(
+                                          title: Text(
+                                              (stockModel.nama).toUpperCase()),
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
+                                            children: <Widget>[
+                                              Divider(
+                                                color: Colors.black,
+                                              ),
+                                              Text(
+                                                  "Stock              :  $jumlah"),
+                                              Divider(
+                                                color: Colors.black,
+                                              ),
+                                              Text(
+                                                  "Harga Beli     :  Rp $beli"),
+                                              Divider(
+                                                color: Colors.black,
+                                              ),
+                                              Row(
+                                                children: <Widget>[
+                                                  Text("Harga Jual    :  "),
+                                                  Text(
+                                                    'Rp $jual',
+                                                    style: TextStyle(
+                                                        fontSize: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width /
+                                                            21,
+                                                        fontWeight:
+                                                            FontWeight.w900),
+                                                  )
+                                                ],
+                                              ),
+                                              Divider(
+                                                color: Colors.black,
+                                              ),
+                                              Text(
+                                                  "Dari                :  $dari"),
+                                              Divider(
+                                                color: Colors.black,
+                                              ),
+                                              Text("Keterangan  :  $ket"),
+                                              Divider(
+                                                color: Colors.black,
+                                              )
+                                            ],
                                           ),
-                                          Container(
-                                            padding: EdgeInsets.all(10),
-                                            child: Text("UPDATE",
-                                                style: TextStyle(
-                                                    color: Colors.green)),
-                                          ),
-                                          InkWell(
-                                              onTap: () {
-                                                showDialog(
-                                                    barrierDismissible: false,
-                                                    context: context,
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return AlertDialog(
-                                                        title: Row(
-                                                          children: <Widget>[
-                                                            Text(
-                                                                "Yakin hapus $nama?"),
-                                                          ],
-                                                        ),
-                                                        actions: <Widget>[
-                                                          InkWell(
-                                                            child: Container(
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .all(
-                                                                            10),
-                                                                child: Text(
-                                                                    "TIDAK",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .blue))),
-                                                            onTap: () {
-                                                              Navigator.pop(
-                                                                  context);
-                                                            },
-                                                          ),
-                                                          InkWell(
-                                                            child: Container(
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .all(
-                                                                            10),
-                                                                child: Text(
-                                                                    "YA",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .red))),
-                                                            onTap: () {
-                                                              tokoDb.deleteStock(
-                                                                  stockModel.id,
-                                                                  stockUpdated);
-                                                              Navigator.pop(
-                                                                  context);
-                                                              Navigator.pop(
-                                                                  context);
-                                                              setState(() {
-                                                                tokoDb.fetchStockWhere(
-                                                                    cariController
-                                                                        .text);
-                                                              });
-                                                            },
-                                                          ),
-                                                        ],
-                                                      );
-                                                    });
-                                              },
+                                          actions: <Widget>[
+                                            InkWell(
+                                              onTap: () =>
+                                                  Navigator.pushReplacement(
+                                                      context,
+                                                      PageRouteBuilder(
+                                                          pageBuilder: (c, a1,
+                                                                  a2) =>
+                                                              OutStockPage(
+                                                                  stockModel:
+                                                                      stockModel))),
                                               child: Container(
                                                 padding: EdgeInsets.all(10),
-                                                child: Text(
-                                                  "HAPUS",
-                                                  style: TextStyle(
-                                                      color: Colors.red),
-                                                ),
-                                              )),
-                                        ],
+                                                child: Text("JUAL",
+                                                    style: TextStyle(
+                                                        color: Colors.blue)),
+                                              ),
+                                            ),
+                                            InkWell(
+                                              onTap: () => Navigator.push(
+                                                  context,
+                                                  PageRouteBuilder(
+                                                      pageBuilder: (c, a1,
+                                                              a2) =>
+                                                          EditStockPage(
+                                                              stockModel:
+                                                                  stockModel))),
+                                              child: Container(
+                                                padding: EdgeInsets.all(10),
+                                                child: Text("UPDATE",
+                                                    style: TextStyle(
+                                                        color: Colors.green)),
+                                              ),
+                                            ),
+                                            InkWell(
+                                                onTap: () {
+                                                  showDialog(
+                                                      barrierDismissible: false,
+                                                      context: context,
+                                                      builder: (BuildContext
+                                                          context) {
+                                                        return BackdropFilter(
+                                                          filter:
+                                                              ImageFilter.blur(
+                                                                  sigmaX: 10,
+                                                                  sigmaY: 10),
+                                                          child: AlertDialog(
+                                                            title: Row(
+                                                              children: <
+                                                                  Widget>[
+                                                                Text(
+                                                                    "Hapus $nama?"),
+                                                              ],
+                                                            ),
+                                                            actions: <Widget>[
+                                                              InkWell(
+                                                                child: Container(
+                                                                    padding:
+                                                                        EdgeInsets.all(
+                                                                            10),
+                                                                    child: Text(
+                                                                        "BATAL",
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Colors.blue))),
+                                                                onTap: () {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                },
+                                                              ),
+                                                              InkWell(
+                                                                child: Container(
+                                                                    padding:
+                                                                        EdgeInsets.all(
+                                                                            10),
+                                                                    child: Text(
+                                                                        "HAPUS",
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Colors.red))),
+                                                                onTap: () {
+                                                                  tokoDb.deleteStock(
+                                                                      stockModel
+                                                                          .id,
+                                                                      stockUpdated);
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                  setState(() {
+                                                                    tokoDb.fetchStockWhere(
+                                                                        cariController
+                                                                            .text);
+                                                                  });
+                                                                },
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        );
+                                                      });
+                                                },
+                                                child: Container(
+                                                  padding: EdgeInsets.all(10),
+                                                  child: Text(
+                                                    "HAPUS",
+                                                    style: TextStyle(
+                                                        color: Colors.red),
+                                                  ),
+                                                )),
+                                          ],
+                                        ),
                                       );
                                     });
                               },

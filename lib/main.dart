@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ucup_bengkel/view/page/home_page.dart';
 
-import 'view/page/stock_page.dart';
-
 void main() {
   runApp(MyApp());
 }

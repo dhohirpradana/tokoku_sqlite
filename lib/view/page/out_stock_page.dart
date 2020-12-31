@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:ucup_bengkel/model/tokoku_model.dart';
 import 'package:intl/intl.dart';
 import 'package:ucup_bengkel/provider/tokoku_db_provider.dart';
+import 'package:ucup_bengkel/view/page/stock_page.dart';
 
 class OutStockPage extends StatefulWidget {
   // Declare a field that holds the Todo.
@@ -29,7 +30,9 @@ class _OutStockPageState extends State<OutStockPage> {
 
   void updateStock() async {
     DateTime now = DateTime.now();
-    final formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
+    final formattedDate = int.parse(DateFormat('yyyy-MM-dd – kk:mm')
+        .format(now)
+        .replaceAll(RegExp(r'[^0-9]'), ''));
     final stockUpdated = StockModel(
       id: widget.stockModel.id,
       nama: widget.stockModel.nama,
@@ -39,20 +42,20 @@ class _OutStockPageState extends State<OutStockPage> {
       dari: widget.stockModel.dari.toString(),
       ket: widget.stockModel.ket.toString(),
       jumlah: widget.stockModel.jumlah - int.parse(jumlahController.text),
-      createdAt: '$formattedDate',
+      createdAt: formattedDate,
       isDeleted: 0,
     );
 
     final stockOut = JualModel(
-      idStock: widget.stockModel.id,
-      hargaJual:
-          int.parse(hargaJualController.text.replaceAll(RegExp(r'[^0-9]'), '')),
-      jumlah: int.parse(jumlahController.text),
-      diskon: int.parse(diskonController.text),
-      pembeli: '',
-      ket: '',
-      createdAt: '$formattedDate',
-    );
+        idStock: widget.stockModel.id,
+        hargaJual: int.parse(
+            hargaJualController.text.replaceAll(RegExp(r'[^0-9]'), '')),
+        jumlah: int.parse(jumlahController.text),
+        diskon: int.parse(diskonController.text),
+        pembeli: '',
+        ket: '',
+        createdAt: formattedDate,
+        isDeleted: 0);
 
     TokoDbProvider tokoDb = TokoDbProvider();
 
@@ -89,8 +92,12 @@ class _OutStockPageState extends State<OutStockPage> {
         color: Colors.green.shade300,
       ),
       leftBarIndicatorColor: Colors.blue.shade300,
-      duration: Duration(seconds: 3),
-    )..show(context);
+      duration: Duration(seconds: 2),
+    )..show(context).then((value) => Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (BuildContext context) => StockPage()),
+          ModalRoute.withName('/'),
+        ));
   }
 
   @override
@@ -166,7 +173,7 @@ class _OutStockPageState extends State<OutStockPage> {
               FocusScope.of(context).requestFocus(diskonNode);
             },
             decoration: const InputDecoration(
-              labelText: 'Jumlah',
+              labelText: 'Banyak',
             ),
             keyboardType: TextInputType.number,
             validator: (value) {
@@ -214,7 +221,7 @@ class _OutStockPageState extends State<OutStockPage> {
               }
             },
             child: Text(
-              'PROSES',
+              'JUAL',
               style: TextStyle(color: Colors.white),
             ),
           ),

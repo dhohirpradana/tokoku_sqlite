@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:ucup_bengkel/view/page/pendapatan_page.dart';
 import 'package:ucup_bengkel/view/page/sold_page.dart';
 import 'package:ucup_bengkel/view/page/stock_page.dart';
+import 'package:ucup_bengkel/view/page/tampil_retur_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -64,6 +66,52 @@ class _HomePageState extends State<HomePage> {
               height: 15,
             ),
             InkWell(
+              onTap: () => Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                      pageBuilder: (c, a1, a2) => TampilReturPage())),
+              child: Material(
+                elevation: 4,
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 2 / 3,
+                  padding: EdgeInsets.only(top: 20, bottom: 20),
+                  child: Center(
+                    child: Text(
+                      "RETUR",
+                      style:
+                          TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            InkWell(
+              onTap: () => Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                      pageBuilder: (c, a1, a2) => PendapatanPage())),
+              child: Material(
+                elevation: 4,
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 2 / 3,
+                  padding: EdgeInsets.only(top: 20, bottom: 20),
+                  child: Center(
+                    child: Text(
+                      "PENDAPATAN",
+                      style:
+                          TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            InkWell(
               onTap: () {},
               child: Material(
                 elevation: 4,
@@ -72,7 +120,7 @@ class _HomePageState extends State<HomePage> {
                   padding: EdgeInsets.only(top: 20, bottom: 20),
                   child: Center(
                     child: Text(
-                      "SETTING",
+                      "PENGATURAN",
                       style:
                           TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                     ),
