@@ -1,6 +1,6 @@
 # ucup_bengkel
 
-A new Flutter project.
+Awalnya buat bengkel jadi Universal
 
 ## Getting Started
 
